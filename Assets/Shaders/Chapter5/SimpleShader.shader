@@ -8,18 +8,23 @@ Shader "URP Practice/Chapter 5/Simple Shader"
     SubShader
     {
         Tags { "RenderPipeline"="UniversalRenderPipeline" }
-        Pass
-        {
-            HLSLPROGRAM
 
+        HLSLINCLUDE
             #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Core.hlsl"
-
-            #pragma vertex vert
-            #pragma fragment frag
 
             CBUFFER_START(UnityPerMaterial)
                 half4 _BaseColor;
             CBUFFER_END
+        ENDHLSL
+
+        Pass
+        {
+            Tags { "LightMode"="UniversalForward" }
+
+            HLSLPROGRAM
+
+            #pragma vertex vert
+            #pragma fragment frag
 
             struct Attributes
             {

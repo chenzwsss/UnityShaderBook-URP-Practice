@@ -9,6 +9,20 @@ Shader "URP Practice/Chapter 8/BlendOperations1"
     SubShader
     {
         Tags { "Queue"="Transparent" "IgnoreProjector"="True" "RenderPipeline"="UniversalRenderPipeline" }
+
+        HLSLINCLUDE
+            #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Core.hlsl"
+
+            TEXTURE2D(_BaseMap);
+            SAMPLER(sampler_BaseMap);
+
+            CBUFFER_START(UnityPerMaterial)
+                half4 _Color;
+                half4 _BaseMap_ST;
+                half _AlphaScale;
+            CBUFFER_END
+        ENDHLSL
+
         Pass
         {
             Tags { "LightMode"="UniversalForward" }
@@ -47,17 +61,6 @@ Shader "URP Practice/Chapter 8/BlendOperations1"
 
             #pragma vertex vert
             #pragma fragment frag
-
-            #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Core.hlsl"
-
-            TEXTURE2D(_BaseMap);
-            SAMPLER(sampler_BaseMap);
-
-            CBUFFER_START(UnityPerMaterial)
-                half4 _Color;
-                half4 _BaseMap_ST;
-                half _AlphaScale;
-            CBUFFER_END
 
             struct Attributes
             {

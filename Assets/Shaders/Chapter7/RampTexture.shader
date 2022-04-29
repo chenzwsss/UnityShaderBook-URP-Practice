@@ -10,16 +10,9 @@ Shader "URP Practice/Chapter 7/RampTexture"
     SubShader
     {
         Tags { "RenderPipeline"="UniversalRenderPipeline" }
-        Pass
-        {
-            Tags { "LightMode"="UniversalForward" }
 
-            HLSLPROGRAM
-            #pragma vertex vert
-            #pragma fragment frag
-
+        HLSLINCLUDE
             #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Core.hlsl"
-            #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Lighting.hlsl"
 
             TEXTURE2D(_RampTex);
             SAMPLER(sampler_RampTex);
@@ -30,6 +23,17 @@ Shader "URP Practice/Chapter 7/RampTexture"
                 half4 _Specular;
                 half _Gloss;
             CBUFFER_END
+        ENDHLSL
+
+        Pass
+        {
+            Tags { "LightMode"="UniversalForward" }
+
+            HLSLPROGRAM
+            #pragma vertex vert
+            #pragma fragment frag
+
+            #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Lighting.hlsl"
 
             struct Attributes
             {

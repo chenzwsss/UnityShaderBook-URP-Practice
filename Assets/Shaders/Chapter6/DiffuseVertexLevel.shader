@@ -8,6 +8,15 @@ Shader "URP Practice/Chapter 6/Diffuse Vertex-Level"
     SubShader
     {
         Tags { "RenderPipeline"="UniversalRenderPipeline" }
+
+        HLSLINCLUDE
+            #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Core.hlsl"
+
+            CBUFFER_START(UnityPerMaterial)
+                half4 _Diffuse;
+            CBUFFER_END
+        ENDHLSL
+
         Pass
         {
             Tags { "LightMode"="UniversalForward" }
@@ -17,12 +26,7 @@ Shader "URP Practice/Chapter 6/Diffuse Vertex-Level"
             #pragma vertex vert
             #pragma fragment frag
 
-            #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Core.hlsl"
             #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Lighting.hlsl"
-
-            CBUFFER_START(UnityPerMaterial)
-                half4 _Diffuse;
-            CBUFFER_END
 
             struct Attributes
             {

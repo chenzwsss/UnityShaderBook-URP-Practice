@@ -10,16 +10,9 @@ Shader "URP Practice/Chapter 7/SingleTexture"
     SubShader
     {
         Tags { "RenderPipeline"="UniversalRenderPipeline" }
-        Pass
-        {
-            Tags { "LightMode"="UniversalForward" }
 
-            HLSLPROGRAM
-            #pragma vertex vert
-            #pragma fragment frag
-
+        HLSLINCLUDE
             #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Core.hlsl"
-            #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Lighting.hlsl"
 
             TEXTURE2D(_BaseMap);
             SAMPLER(sampler_BaseMap);
@@ -30,6 +23,17 @@ Shader "URP Practice/Chapter 7/SingleTexture"
                 half _Gloss;
                 float4 _BaseMap_ST;
             CBUFFER_END
+        ENDHLSL
+
+        Pass
+        {
+            Tags { "LightMode"="UniversalForward" }
+
+            HLSLPROGRAM
+            #pragma vertex vert
+            #pragma fragment frag
+
+            #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Lighting.hlsl"
 
             struct Attributes
             {

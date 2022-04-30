@@ -124,7 +124,6 @@ Shader "URP Practice/Chapter 9/Shadow"
             }
             ENDHLSL
         }
-
         // 下面计算阴影的Pass可以直接通过使用URP内置的Pass计算
         // UsePass "Universal Render Pipeline/Lit/ShadowCaster"
         // or

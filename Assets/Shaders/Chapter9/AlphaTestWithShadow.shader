@@ -97,8 +97,8 @@ Shader "URP Practice/Chapter 9/AlphaTestWithShadow"
 
                 half3 diffuse = LightingBased(mainLight, normalWS, albedo);
 
-                half pixelLightsCount = GetAdditionalLightsCount();
-                for (uint lightIndex = 0; lightIndex < pixelLightsCount; ++lightIndex)
+                uint pixelLightsCount = GetAdditionalLightsCount();
+                for (uint lightIndex = 0u; lightIndex < pixelLightsCount; ++lightIndex)
                 {
                     Light light = GetAdditionalLight(lightIndex, i.positionWS, shadowMask);
 
@@ -145,7 +145,7 @@ Shader "URP Practice/Chapter 9/AlphaTestWithShadow"
 
             float4 GetShadowPositionHClip(Attributes input)
             {
-                float3 positionWS = TransformObjectToWorld(input.positionOS);
+                float3 positionWS = TransformObjectToWorld(input.positionOS.xyz);
                 float3 normalWS = TransformObjectToWorldNormal(input.normalOS);
 
                 #if _CASTING_PUNCTUAL_LIGHT_SHADOW

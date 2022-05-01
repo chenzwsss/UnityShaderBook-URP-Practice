@@ -49,7 +49,7 @@ Shader "URP Practice/Chapter 9/Shadow"
             {
                 float4 positionOS : POSITION;
                 float3 normalOS : NORMAL;
-                float2 staticLightmapUV : TEXCOORD1;
+                float2 lightmapUV : TEXCOORD1;
             };
 
             struct Varyings
@@ -57,7 +57,7 @@ Shader "URP Practice/Chapter 9/Shadow"
                 float4 positionHCS : SV_POSITION;
                 float3 normalWS : TEXCOORD0;
                 float3 positionWS : TEXCOORD1;
-                float2 staticLightmapUV : TEXCOORD2;
+                float2 lightmapUV : TEXCOORD2;
             };
 
             Varyings vert(Attributes input)
@@ -68,7 +68,8 @@ Shader "URP Practice/Chapter 9/Shadow"
                 output.normalWS = TransformObjectToWorldNormal(input.normalOS);
                 output.positionWS = TransformObjectToWorld(input.positionOS.xyz);
 
-                OUTPUT_LIGHTMAP_UV(input.staticLightmapUV, unity_LightmapST, output.staticLightmapUV);
+                OUTPUT_LIGHTMAP_UV(input.lightmapUV, unity_LightmapST, output.lightmapUV);
+                // output.lightmapUV = input.lightmapUV.xy * unity_LightmapST.xy + unity_LightmapST.zw;
 
                 return output;
             }
@@ -90,7 +91,7 @@ Shader "URP Practice/Chapter 9/Shadow"
 
                 half4 shadowMask;
                 #if defined(SHADOWS_SHADOWMASK) && defined(LIGHTMAP_ON)
-                    shadowMask = SAMPLE_SHADOWMASK(i.staticLightmapUV);
+                    shadowMask = SAMPLE_SHADOWMASK(i.lightmapUV);
                 #elif !defined (LIGHTMAP_ON)
                     shadowMask = unity_ProbesOcclusion;
                 #else

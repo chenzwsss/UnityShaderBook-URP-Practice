@@ -166,7 +166,7 @@ Shader "URP Practice/Common/BumpedSpecular"
             #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Shadows.hlsl"
 
             float3 _LightDirection;
-            float3 _LightPOsition;
+            float3 _LightPosition;
 
             struct Attributes
             {

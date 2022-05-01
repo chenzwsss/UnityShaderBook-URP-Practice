@@ -7,9 +7,7 @@ Shader "URP Practice/Common/BumpedDiffuse"
         [MainColor] _BaseColor("Color", Color) = (1, 1, 1, 1)
         // 法线贴图
         _BumpMap("Normal Map", 2D) = "bump" {}
-        _BumpScale("Bump Scale", Float) = 1.0
-        // 漫反射叠加颜色
-        _Diffuse("Diffuse", Color) = (1, 1, 1, 1)
+        _BumpMap_Scale("Bump Scale", Float) = 1.0
     }
     SubShader
     {
@@ -44,8 +42,7 @@ Shader "URP Practice/Common/BumpedDiffuse"
                 half4 _BaseColor;
                 half4 _BaseMap_ST;
                 half4 _BumpMap_ST;
-                half4 _Diffuse;
-                half _BumpScale;
+                half _BumpMap_Scale;
             CBUFFER_END
 
             struct Attributes
@@ -63,8 +60,9 @@ Shader "URP Practice/Common/BumpedDiffuse"
                 float4 uv : TEXCOORD0; // uv.xy: 基础纹理uv, uv.zw: 法线纹理uv
                 float3 positionWS : TEXCOORD1;
                 float3 normalWS : TEXCOORD2;
-                float4 tangentWS : TEXCOORD3; // xyz: tangent, w: sign
-                float2 lightmapUV : TEXCOORD4;
+                float3 tangentWS : TEXCOORD3;
+                float3 bitangentWS : TEXCOORD4;
+                float2 lightmapUV : TEXCOORD5;
             };
 
             Varyings vert(Attributes input)
@@ -78,8 +76,8 @@ Shader "URP Practice/Common/BumpedDiffuse"
 
                 output.positionWS = TransformObjectToWorld(input.positionOS.xyz);
                 output.normalWS = TransformObjectToWorldNormal(input.normalOS);
-                output.tangentWS.xyz = TransformObjectToWorld(input.tangentOS.xyz);
-                output.tangentWS.w = input.tangentOS.w;
+                output.tangentWS = TransformObjectToWorld(input.tangentOS.xyz);
+                output.bitangentWS = cross(output.normalWS, output.tangentWS) * input.tangentOS.w;
 
                 output.lightmapUV = input.lightmapUV.xy * unity_LightmapST.xy + unity_LightmapST.zw;
 
@@ -91,7 +89,7 @@ Shader "URP Practice/Common/BumpedDiffuse"
                 // 光源方向
                 half3 lightDirectionWS = normalize(light.direction);
                 // 计算漫反射
-                half3 diffuse = light.color * albedo * _Diffuse.rgb * saturate(dot(normalWS, lightDirectionWS));
+                half3 diffuse = light.color * albedo * saturate(dot(normalWS, lightDirectionWS));
                 // 考虑光的强度和阴影
                 return diffuse * light.distanceAttenuation * light.shadowAttenuation;
             }
@@ -99,12 +97,11 @@ Shader "URP Practice/Common/BumpedDiffuse"
             half4 frag(Varyings input) : SV_Target
             {
                 // 对法线纹理采样
-                half3 normalTS = UnpackNormalScale(SAMPLE_TEXTURE2D(_BumpMap, sampler_BumpMap, input.uv.zw), _BumpScale);
+                half3 normalTS = UnpackNormalScale(SAMPLE_TEXTURE2D(_BumpMap, sampler_BumpMap, input.uv.zw), _BumpMap_Scale);
+
                 // 切线空间下的法线转换到世界空间
                 // 切线空间x轴: 切线tangent, y轴: 副切线bitangent, z轴: 法线normal
-                float sgn = input.tangentWS.w;
-                float3 bitangentWS = cross(input.normalWS.xyz, input.tangentWS.xyz) * sgn;
-                half3x3 tangentToWorld = half3x3(input.tangentWS.xyz, bitangentWS.xyz, input.normalWS.xyz);
+                half3x3 tangentToWorld = half3x3(input.tangentWS.xyz, input.bitangentWS.xyz, input.normalWS.xyz);
                 half3 normalWS = normalize(TransformTangentToWorld(normalTS, tangentToWorld));
 
                 // 纹理采样
@@ -113,7 +110,7 @@ Shader "URP Practice/Common/BumpedDiffuse"
                 // 计算环境环境光
                 half3 ambient = SampleSH(normalWS) * albedo;
 
-                half4 shadowMask = SAMPLE_SHADOWMASK(i.staticLightmapUV);
+                half4 shadowMask = SAMPLE_SHADOWMASK(i.lightmapUV);
 
                 // 获取阴影坐标
                 float4 shadowCoord = TransformWorldToShadowCoord(input.positionWS);

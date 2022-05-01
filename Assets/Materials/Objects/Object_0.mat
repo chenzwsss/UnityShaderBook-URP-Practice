@@ -21,7 +21,7 @@ Material:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_Name: Object_0
-  m_Shader: {fileID: 4800000, guid: dce560d39fb324aee83798226e64f361, type: 3}
+  m_Shader: {fileID: 4800000, guid: 3f3b5305d899b481fad98346e9ea5b52, type: 3}
   m_ValidKeywords: []
   m_InvalidKeywords: []
   m_LightmapFlags: 4
@@ -34,11 +34,11 @@ Material:
     serializedVersion: 3
     m_TexEnvs:
     - _BaseMap:
-        m_Texture: {fileID: 2800000, guid: cfe6ac6efe53444ecae81e696a1820ea, type: 3}
+        m_Texture: {fileID: 2800000, guid: e5a1689a472934972bf5deb6709dff63, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _BumpMap:
-        m_Texture: {fileID: 2800000, guid: 67eebb351264d40928538eb2a8620b71, type: 3}
+        m_Texture: {fileID: 2800000, guid: f40a08e8b165f4c37baf1e903d63c9a7, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _DetailAlbedoMap:

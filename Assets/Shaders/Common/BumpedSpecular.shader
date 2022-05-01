@@ -33,14 +33,7 @@ Shader "URP Practice/Common/BumpedSpecular"
             #pragma multi_compile _ _SHADOWS_SOFT
 
             // 开启接收其他光源阴影
-            // #pragma multi_compile _ _ADDITIONAL_LIGHTS_VERTEX _ADDITIONAL_LIGHTS
             #pragma multi_compile _ _ADDITIONAL_LIGHT_SHADOWS
-
-            // #pragma multi_compile _ LIGHTMAP_SHADOW_MIXING
-            // #pragma multi_compile _ SHADOWS_SHADOWMASK
-            // #pragma multi_compile _ DIRLIGHTMAP_COMBINED
-            // #pragma multi_compile _ LIGHTMAP_ON
-            // #pragma multi_compile _ DYNAMICLIGHTMAP_ON
 
             #pragma vertex vert
             #pragma fragment frag
@@ -74,11 +67,12 @@ Shader "URP Practice/Common/BumpedSpecular"
             struct Varyings
             {
                 float4 positionCS : SV_POSITION;
-                float3 positionWS : TEXCOORD0;
-                float3 normalWS : TEXCOORD1;
-                float4 tangentWS : TEXCOORD2; // xyz: tangent, w: dir sign
-                float4 uv : TEXCOORD3; // xy: _BaseMap uv, zw: _BumpMap uv
-                float2 lightmapUV : TEXCOORD4;
+                float4 uv : TEXCOORD0; // uv.xy: 基础纹理uv, uv.zw: 法线纹理uv
+                float3 positionWS : TEXCOORD1;
+                float3 normalWS : TEXCOORD2;
+                float3 tangentWS : TEXCOORD3;
+                float3 bitangentWS : TEXCOORD4;
+                float2 lightmapUV : TEXCOORD5;
             };
 
             Varyings vert(Attributes input)
@@ -86,12 +80,18 @@ Shader "URP Practice/Common/BumpedSpecular"
                 Varyings output;
 
                 output.positionCS = TransformObjectToHClip(input.positionOS.xyz);
-                output.positionWS = TransformObjectToWorld(input.positionOS.xyz);
-                output.normalWS = TransformObjectToWorldNormal(input.normalOS);
-                output.tangentWS.xyz = TransformObjectToWorld(input.tangentOS.xyz);
-                output.tangentWS.z = input.tangentOS.z;
+
                 output.uv.xy = TRANSFORM_TEX(input.texcoord, _BaseMap);
                 output.uv.zw = TRANSFORM_TEX(input.texcoord, _BumpMap);
+
+                output.positionWS = TransformObjectToWorld(input.positionOS.xyz);
+                // 法线 in WS
+                output.normalWS = TransformObjectToWorldNormal(input.normalOS);
+                // 切线 in WS
+                output.tangentWS = TransformObjectToWorld(input.tangentOS.xyz);
+                // 通过世界空间下的法线和切线计算出副切线bitangent
+                output.bitangentWS = cross(output.normalWS, output.tangentWS) * input.tangentOS.w;
+
                 output.lightmapUV = input.lightmapUV * unity_LightmapST.xy + unity_LightmapST.zw;
 
                 return output;
@@ -115,10 +115,8 @@ Shader "URP Practice/Common/BumpedSpecular"
                 half3 viewDirectionWS = normalize(GetWorldSpaceViewDir(input.positionWS));
                 // 采样法线贴图，得到切线空间下的法线向量
                 half3 normalTS = UnpackNormalScale(SAMPLE_TEXTURE2D(_BumpMap, sampler_BumpMap, input.uv.zw), _BumpScale);
-                // 通过世界空间下的法线和切线计算出副切线
-                half3 bitangentWS = cross(input.normalWS, input.tangentWS.xyz) * input.tangentWS.w;
                 // 组建切线空间矩阵
-                half3x3 tangentToWorld = half3x3(input.tangentWS.xyz, bitangentWS.xyz, input.normalWS.xyz);
+                half3x3 tangentToWorld = half3x3(input.tangentWS.xyz, input.bitangentWS.xyz, input.normalWS.xyz);
                 // 把切线空间下的法线转换到世界空间下
                 half3 normalWS = normalize(mul(normalTS, tangentToWorld));
 

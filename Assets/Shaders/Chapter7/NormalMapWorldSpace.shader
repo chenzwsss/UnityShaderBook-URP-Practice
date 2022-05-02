@@ -70,7 +70,7 @@ Shader "URP Practice/Chapter 7/Normal Map In World Space"
 
                 float3 positionWS = TransformObjectToWorld(IN.positionOS.xyz);
                 float3 normalWS = TransformObjectToWorldNormal(IN.normal);
-                float3 tangentWS = TransformObjectToWorld(IN.tangent.xyz);
+                float3 tangentWS = TransformObjectToWorldDir(IN.tangent.xyz);
                 float3 bitangentWS = cross(normalWS, tangentWS) * IN.tangent.w;
 
                 OUT.TtoW0 = float4(tangentWS.x, bitangentWS.x, normalWS.x, positionWS.x);

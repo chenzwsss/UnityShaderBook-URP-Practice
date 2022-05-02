@@ -76,7 +76,7 @@ Shader "URP Practice/Common/BumpedDiffuse"
 
                 output.positionWS = TransformObjectToWorld(input.positionOS.xyz);
                 output.normalWS = TransformObjectToWorldNormal(input.normalOS);
-                output.tangentWS = TransformObjectToWorld(input.tangentOS.xyz);
+                output.tangentWS = TransformObjectToWorldDir(input.tangentOS.xyz);
                 output.bitangentWS = cross(output.normalWS, output.tangentWS) * input.tangentOS.w;
 
                 output.lightmapUV = input.lightmapUV.xy * unity_LightmapST.xy + unity_LightmapST.zw;

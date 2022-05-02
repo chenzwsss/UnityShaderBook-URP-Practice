@@ -88,7 +88,7 @@ Shader "URP Practice/Common/BumpedSpecular"
                 // 法线 in WS
                 output.normalWS = TransformObjectToWorldNormal(input.normalOS);
                 // 切线 in WS
-                output.tangentWS = TransformObjectToWorld(input.tangentOS.xyz);
+                output.tangentWS = TransformObjectToWorldDir(input.tangentOS.xyz);
                 // 通过世界空间下的法线和切线计算出副切线bitangent
                 output.bitangentWS = cross(output.normalWS, output.tangentWS) * input.tangentOS.w;
 

@@ -84,7 +84,7 @@ Shader "URP Practice/Chapter 7/MaskTexture"
                 // normal in WS
                 float3 normalWS = TransformObjectToWorldNormal(IN.normal);
                 // tangent in WS
-                float3 tangentWS = TransformObjectToWorld(IN.tangent.xyz);
+                float3 tangentWS = TransformObjectToWorldDir(IN.tangent.xyz);
                 // bitangent in WS
                 float3 bitangentWS = cross(normalWS, tangentWS) * IN.tangent.w;
 

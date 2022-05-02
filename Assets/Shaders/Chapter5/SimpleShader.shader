@@ -7,7 +7,7 @@ Shader "URP Practice/Chapter 5/Simple Shader"
 
     SubShader
     {
-        Tags { "RenderPipeline"="UniversalRenderPipeline" }
+        Tags { "RenderPipeline"="UniversalPipeline" }
 
         HLSLINCLUDE
             #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Core.hlsl"

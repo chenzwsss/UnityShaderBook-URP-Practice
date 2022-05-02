@@ -9,7 +9,7 @@ Shader "URP Practice/Chapter 7/RampTexture"
     }
     SubShader
     {
-        Tags { "RenderPipeline"="UniversalRenderPipeline" }
+        Tags { "RenderPipeline"="UniversalPipeline" }
 
         HLSLINCLUDE
             #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Core.hlsl"

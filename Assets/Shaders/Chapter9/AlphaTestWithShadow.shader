@@ -8,7 +8,7 @@ Shader "URP Practice/Chapter 9/AlphaTestWithShadow"
     }
     SubShader
     {
-        Tags { "RenderType"="Transparent" "RenderPipeline"="UniversalRenderPipeline" }
+        Tags { "RenderType"="Transparent" "RenderPipeline"="UniversalPipeline" }
 
         HLSLINCLUDE
 

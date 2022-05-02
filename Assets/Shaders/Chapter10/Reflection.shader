@@ -13,7 +13,7 @@ Shader "URP Practice/Chapter 10/Reflection"
     }
     SubShader
     {
-        Tags { "RenderType"="Opaque" "RenderPipeline"="UniversalRenderPipeline" }
+        Tags { "RenderType"="Opaque" "RenderPipeline"="UniversalPipeline" }
         Pass
         {
             Tags { "LightMode"="UniversalForward" }

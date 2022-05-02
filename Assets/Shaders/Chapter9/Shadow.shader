@@ -8,7 +8,7 @@ Shader "URP Practice/Chapter 9/Shadow"
     }
     SubShader
     {
-        Tags { "RenderType"="Opaque" "RenderPipeline"="UniversalRenderPipeline" }
+        Tags { "RenderType"="Opaque" "RenderPipeline"="UniversalPipeline" }
 
         HLSLINCLUDE
 

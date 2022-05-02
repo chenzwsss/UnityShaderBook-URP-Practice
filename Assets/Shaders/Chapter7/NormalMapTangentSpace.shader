@@ -11,7 +11,7 @@ Shader "URP Practice/Chapter 7/Normal Map In Tangent Space"
     }
     SubShader
     {
-        Tags { "RenderPipeline"="UniversalRenderPipeline" }
+        Tags { "RenderPipeline"="UniversalPipeline" }
 
         HLSLINCLUDE
             #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Core.hlsl"

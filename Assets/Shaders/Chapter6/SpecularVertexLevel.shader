@@ -8,7 +8,7 @@ Shader "URP Practice/Chapter 6/Specular Vertex-Level"
     }
     SubShader
     {
-        Tags { "RenderPipeline"="UniversalRenderPipeline" }
+        Tags { "RenderPipeline"="UniversalPipeline" }
 
         HLSLINCLUDE
             #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Core.hlsl"

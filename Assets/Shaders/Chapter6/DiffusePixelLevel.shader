@@ -6,7 +6,7 @@ Shader "URP Practice/Chapter 6/Diffuse Pixel-Level"
     }
     SubShader
     {
-        Tags { "RenderPipeline"="UniversalRenderPipeline" }
+        Tags { "RenderPipeline"="UniversalPipeline" }
 
         HLSLINCLUDE
             #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Core.hlsl"

@@ -17,7 +17,7 @@ Shader "URP Practice/Common/BumpedSpecular"
     }
     SubShader
     {
-        Tags { "RenderType"="Opaque" "RenderPipeline"="UniversalRenderPipeline" }
+        Tags { "RenderType"="Opaque" "RenderPipeline"="UniversalPipeline" }
 
         Pass
         {

@@ -11,7 +11,7 @@ Shader "URP Practice/Common/BumpedDiffuse"
     }
     SubShader
     {
-        Tags { "RenderType"="Opaque" "RenderPipeline"="UniversalRenderPipeline" }
+        Tags { "RenderType"="Opaque" "RenderPipeline"="UniversalPipeline" }
         Pass
         {
             Tags { "LightMode"="UniversalForward" }

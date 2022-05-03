@@ -77,7 +77,7 @@ Shader "URP Practice/Chapter 10/EmpricialFresnelReflection"
                 half3 reflection = texCUBE(_Cubemap, normalize(input.reflectionWS)).rgb;
 
                 // 计算 Empricial-Fresnel
-                half fresnel = max(0.0, min(1.0, _FresnelBias + _FresnelScale * pow(1.0 - dot(viewDirectionWS, normalWS), _FresnelPower)));
+                half fresnel = max(0.0, min(1.0, _FresnelBias + _FresnelScale * pow(1.0 - saturate(dot(viewDirectionWS, normalWS)), _FresnelPower)));
 
                 half3 color = ambient + lerp(diffuse, reflection, fresnel) * mainLight.distanceAttenuation;
 

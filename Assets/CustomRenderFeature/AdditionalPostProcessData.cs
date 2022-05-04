@@ -15,6 +15,8 @@ namespace UnityEngine.Rendering.Universal
             //在这里扩展后续其他后处理Shader引用
 
             public Shader edgeDetection;
+
+            public Shader gaussianBlur;
         }
         public Shaders shaders;
     }

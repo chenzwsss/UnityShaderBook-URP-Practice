@@ -16,3 +16,4 @@ MonoBehaviour:
     brightnessSaturationContrast: {fileID: 4800000, guid: 61dc8047d7f154b988458fd488920be5,
       type: 3}
     edgeDetection: {fileID: 4800000, guid: b6c923302e093403285f61ef43e57957, type: 3}
+    gaussianBlur: {fileID: 4800000, guid: 8961ac389e6fb4dc580168057a174be2, type: 3}

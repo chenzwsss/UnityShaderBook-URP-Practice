@@ -81,7 +81,7 @@ QualitySettings:
       type: 2}
     excludedTargetPlatforms: []
   - serializedVersion: 2
-    name: High Fidelity
+    name: MyURP
     pixelLightCount: 2
     shadows: 2
     shadowResolution: 1
@@ -114,7 +114,7 @@ QualitySettings:
     asyncUploadBufferSize: 16
     asyncUploadPersistentBuffer: 1
     resolutionScalingFixedDPIFactor: 1
-    customRenderPipeline: {fileID: 11400000, guid: 7b7fd9122c28c4d15b667c7040e3b3fd,
+    customRenderPipeline: {fileID: 11400000, guid: 131e190547c694220a6113fd22a9eff0,
       type: 2}
     excludedTargetPlatforms: []
   m_PerPlatformDefaultQuality:

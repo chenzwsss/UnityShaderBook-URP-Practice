@@ -14,9 +14,12 @@ namespace UnityEngine.Rendering.Universal
             public Shader brightnessSaturationContrast;
             //在这里扩展后续其他后处理Shader引用
 
+            // 描边
             public Shader edgeDetection;
-
+            // 高斯模糊
             public Shader gaussianBlur;
+            // Bloom
+            public Shader bloom;
         }
         public Shaders shaders;
     }

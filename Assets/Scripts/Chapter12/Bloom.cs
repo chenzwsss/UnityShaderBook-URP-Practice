@@ -2,8 +2,8 @@ using System;
 
 namespace UnityEngine.Rendering.Universal
 {
-    [Serializable, VolumeComponentMenu("Addition-Post-processing/GaussianBlur")]
-    public class GaussianBlur : VolumeComponent, IPostProcessComponent
+    [Serializable, VolumeComponentMenu("Addition-Post-processing/Bloom")]
+    public class Bloom : VolumeComponent, IPostProcessComponent
     {
         [Tooltip("开关")]
         public BoolParameter _Switch = new BoolParameter(false);
@@ -14,6 +14,8 @@ namespace UnityEngine.Rendering.Universal
         public ClampedFloatParameter blurSpread = new ClampedFloatParameter(0.6f, 0.2f, 3f);
         [Tooltip("缩放系数")]
         public ClampedIntParameter downSample = new ClampedIntParameter(2, 1, 8);
+        [Tooltip("提取较亮区域的阈值")]
+        public ClampedFloatParameter luminanceThreshold = new ClampedFloatParameter(0.6f, 0f, 1f);
 
         public bool IsActive() => _Switch.value;
 

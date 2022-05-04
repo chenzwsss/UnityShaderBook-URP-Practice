@@ -28,6 +28,7 @@ namespace UnityEngine.Rendering.Universal
         RenderTargetHandle m_TempRT0;
         // 临时的渲染目标
         RenderTargetHandle m_TempRT1;
+        RenderTargetHandle m_TempRT2;
 
         // 属性参数组件
         BrightnessSaturationContrast m_BrightnessSaturationContrast;
@@ -35,8 +36,8 @@ namespace UnityEngine.Rendering.Universal
         /// 这里扩展后续的属性参数组件引用
 
         EdgeDetection m_EdgeDetection;
-
         GaussianBlur m_GaussianBlur;
+        Bloom m_Bloom;
 
 
         public AdditionPostProcessPass(RenderPassEvent evt, AdditionalPostProcessData data, Material blitMaterial = null)
@@ -48,6 +49,7 @@ namespace UnityEngine.Rendering.Universal
 
             m_TempRT0.Init("_TemporaryRenderTexture0");
             m_TempRT1.Init("_TemporaryRenderTexture1");
+            m_TempRT2.Init("_TemporaryRenderTexture2");
         }
 
         public void Setup(in RenderTextureDescriptor baseDescriptor, in RenderTargetIdentifier source, in RenderTargetIdentifier depth, in RenderTargetHandle destination)
@@ -75,6 +77,7 @@ namespace UnityEngine.Rendering.Universal
             /// 这里扩展后续的属性参数组件获取
             m_EdgeDetection = stack.GetComponent<EdgeDetection>();
             m_GaussianBlur = stack.GetComponent<GaussianBlur>();
+            m_Bloom = stack.GetComponent<Bloom>();
  
             // 从命令缓冲区池中获取一个带标签的渲染命令，该标签名可以在后续帧调试器中见到
             var cmd = CommandBufferPool.Get(CommandBufferTag);
@@ -107,10 +110,13 @@ namespace UnityEngine.Rendering.Universal
             {
                 SetEdgeDetection(cmd, m_Materials.edgeDetection);
             }
-
             if (m_GaussianBlur.IsActive() && !isSceneViewCamera)
             {
                 SetGaussianBlur(cmd, m_Materials.gaussianBlur);
+            }
+            if (m_Bloom.IsActive() && !isSceneViewCamera)
+            {
+                SetBloom(cmd, m_Materials.bloom);
             }
         }
 
@@ -213,6 +219,55 @@ namespace UnityEngine.Rendering.Universal
             // 释放临时RT
             cmd.ReleaseTemporaryRT(m_TempRT0.id);
             cmd.ReleaseTemporaryRT(m_TempRT1.id);
+        }
+
+        void SetBloom(CommandBuffer cmd, Material uberMaterial)
+        {
+            uberMaterial.SetFloat("_LuminanceThreshold", m_Bloom.luminanceThreshold.value);
+
+            int rtW = m_Descriptor.width / m_Bloom.downSample.value;
+            int rtH = m_Descriptor.height / m_Bloom.downSample.value;
+
+            RenderTargetIdentifier buffer0, buffer1;
+            RenderTargetIdentifier buffer2;
+            var desc = GetStereoCompatibleDescriptor(rtW, rtH);
+            cmd.GetTemporaryRT(m_TempRT0.id, desc, FilterMode.Bilinear);
+            buffer0 = m_TempRT0.id;
+            cmd.GetTemporaryRT(m_TempRT1.id, desc, FilterMode.Bilinear);
+            buffer1 = m_TempRT1.id;
+
+            var descOri = GetStereoCompatibleDescriptor(m_Descriptor.width, m_Descriptor.height);
+            cmd.GetTemporaryRT(m_TempRT2.id, descOri, FilterMode.Bilinear);
+            buffer2 = m_TempRT2.id;
+            cmd.Blit(m_Source, buffer2);
+
+            // 将计算结果存入临时缓冲区0
+            cmd.Blit(m_Source, buffer0, uberMaterial, 0);
+
+            // 循环高斯模糊多次迭代多次
+            for (int i = 0; i < m_Bloom.iterations.value; ++i)
+            {
+                // 设置 Shader 变量 _BlurSize
+                uberMaterial.SetFloat("_BlurSize", 1.0f  + i * m_Bloom.blurSpread.value);
+                // 第一个 Pass, 竖直方向模糊, 从临时缓冲区0到临时缓冲区1
+                cmd.Blit(buffer0, buffer1, uberMaterial, 1);
+                // 交换临时缓冲区1到临时缓冲区0
+                CoreUtils.Swap(ref buffer0, ref buffer1);
+                // 第二个 Pass, 水平方向模糊, 从临时缓冲区0到临时缓冲区1
+                cmd.Blit(buffer0, buffer1, uberMaterial, 2);
+                // 再次交换临时缓冲区1到临时缓冲区0, 进入下一个循环
+                CoreUtils.Swap(ref buffer0, ref buffer1);
+            }
+
+            int _BloomTexture = Shader.PropertyToID("_BloomTexture");
+            cmd.SetGlobalTexture(_BloomTexture, buffer0);
+            // 再从临时缓冲区0存入主纹理
+            cmd.Blit(buffer2, m_Source, uberMaterial, 3);
+
+            // 释放临时RT
+            cmd.ReleaseTemporaryRT(m_TempRT0.id);
+            cmd.ReleaseTemporaryRT(m_TempRT1.id);
+            cmd.ReleaseTemporaryRT(m_TempRT2.id);
         }
 
         #endregion

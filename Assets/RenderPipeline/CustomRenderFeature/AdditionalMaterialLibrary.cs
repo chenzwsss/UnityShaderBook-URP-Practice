@@ -12,6 +12,8 @@ namespace UnityEngine.Rendering.Universal
 
         public readonly Material gaussianBlur;
 
+        public readonly Material bloom;
+
         /// <summary>
         /// 初始化时从配置文件中获取材质
         /// </summary>
@@ -22,8 +24,8 @@ namespace UnityEngine.Rendering.Universal
             // 这里扩展后处理材质的加载
 
             edgeDetection = Load(data.shaders.edgeDetection);
-
             gaussianBlur = Load(data.shaders.gaussianBlur);
+            bloom = Load(data.shaders.bloom);
         }
 
         Material Load(Shader shader)

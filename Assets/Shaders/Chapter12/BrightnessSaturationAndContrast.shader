@@ -65,6 +65,11 @@ Shader "URP Practice/Chapter 12/BrightnessSaturationAndContrast"
                 return output;
             }
 
+            half luminance(half4 color)
+            {
+                return 0.2125 * color.r + 0.7154 * color.g + 0.0721 * color.b;
+            }
+
             half4 frag(Varyings input) : SV_Target
             {
                 // 纹理采样
@@ -75,8 +80,8 @@ Shader "URP Practice/Chapter 12/BrightnessSaturationAndContrast"
 
                 // 调整饱和度
                 // 获取亮度值
-                half luminance = 0.2125 * renderTex.r + 0.7154 * renderTex.g + 0.0721 * renderTex.b;
-                half3 luminanceColor = half3(luminance, luminance, luminance);
+                half pixelLuminance = luminance(renderTex);
+                half3 luminanceColor = half3(pixelLuminance, pixelLuminance, pixelLuminance);
                 // 插值亮度值和原值
                 finalColor = lerp(luminanceColor, finalColor, _Saturation);
 

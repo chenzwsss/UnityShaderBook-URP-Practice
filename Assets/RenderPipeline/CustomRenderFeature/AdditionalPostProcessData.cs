@@ -20,6 +20,8 @@ namespace UnityEngine.Rendering.Universal
             public Shader gaussianBlur;
             // Bloom
             public Shader bloom;
+            // MotionBlur
+            public Shader motionBlur;
         }
         public Shaders shaders;
     }

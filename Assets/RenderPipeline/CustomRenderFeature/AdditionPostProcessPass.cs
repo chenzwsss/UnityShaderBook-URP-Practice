@@ -39,6 +39,8 @@ namespace UnityEngine.Rendering.Universal
         GaussianBlur m_GaussianBlur;
         Bloom m_Bloom;
 
+        MotionBlur m_MotionBlur;
+        private RenderTexture motionBlurLastRT;
 
         public AdditionPostProcessPass(RenderPassEvent evt, AdditionalPostProcessData data, Material blitMaterial = null)
         {
@@ -78,6 +80,7 @@ namespace UnityEngine.Rendering.Universal
             m_EdgeDetection = stack.GetComponent<EdgeDetection>();
             m_GaussianBlur = stack.GetComponent<GaussianBlur>();
             m_Bloom = stack.GetComponent<Bloom>();
+            m_MotionBlur = stack.GetComponent<MotionBlur>();
  
             // 从命令缓冲区池中获取一个带标签的渲染命令，该标签名可以在后续帧调试器中见到
             var cmd = CommandBufferPool.Get(CommandBufferTag);
@@ -118,6 +121,10 @@ namespace UnityEngine.Rendering.Universal
             {
                 SetBloom(cmd, m_Materials.bloom);
             }
+            if (m_MotionBlur.IsActive() && !isSceneViewCamera)
+            {
+                SetMotionBlur(cmd, m_Materials.motionBlur);
+            }
         }
 
         RenderTextureDescriptor GetStereoCompatibleDescriptor(int width, int height, int depthBufferBits = 0)
@@ -129,7 +136,6 @@ namespace UnityEngine.Rendering.Universal
             desc.height = height;
             return desc;
         }
-
 
 
         #region 处理材质渲染
@@ -239,35 +245,55 @@ namespace UnityEngine.Rendering.Universal
             var descOri = GetStereoCompatibleDescriptor(m_Descriptor.width, m_Descriptor.height);
             cmd.GetTemporaryRT(m_TempRT2.id, descOri, FilterMode.Bilinear);
             buffer2 = m_TempRT2.id;
+            // 存储原纹理
             cmd.Blit(m_Source, buffer2);
 
-            // 将计算结果存入临时缓冲区0
+            // 第1个Pass, 根据设置的 _LuminanceThreshold 提取出亮的区域, 也就是要 Bloom 的区域, 存入 buffer0
             cmd.Blit(m_Source, buffer0, uberMaterial, 0);
 
-            // 循环高斯模糊多次迭代多次
+            // 对提取后的 buffer0 进行高斯模糊
             for (int i = 0; i < m_Bloom.iterations.value; ++i)
             {
                 // 设置 Shader 变量 _BlurSize
                 uberMaterial.SetFloat("_BlurSize", 1.0f  + i * m_Bloom.blurSpread.value);
-                // 第一个 Pass, 竖直方向模糊, 从临时缓冲区0到临时缓冲区1
+                // 第2个 Pass, 竖直方向模糊, 从 buffer0 到 buffer1
                 cmd.Blit(buffer0, buffer1, uberMaterial, 1);
-                // 交换临时缓冲区1到临时缓冲区0
+                // 交换 buffer1 到 buffer0
                 CoreUtils.Swap(ref buffer0, ref buffer1);
-                // 第二个 Pass, 水平方向模糊, 从临时缓冲区0到临时缓冲区1
+                // 第3个 Pass, 水平方向模糊, 从 buffer0 到 buffer1
                 cmd.Blit(buffer0, buffer1, uberMaterial, 2);
-                // 再次交换临时缓冲区1到临时缓冲区0, 进入下一个循环
+                // 再次交换 buffer1 到 buffer0, 进入下一个循环
                 CoreUtils.Swap(ref buffer0, ref buffer1);
             }
-
-            int _BloomTexture = Shader.PropertyToID("_BloomTexture");
-            cmd.SetGlobalTexture(_BloomTexture, buffer0);
-            // 再从临时缓冲区0存入主纹理
+            // 把高斯模糊后的提取出的 Bloom 传入 Shader 中
+            cmd.SetGlobalTexture("_BloomTexture", buffer0);
+            // 第4个 Pass, 把原纹理和处理后的提取出来的纹理相加, 最终就是 Bloom 效果
             cmd.Blit(buffer2, m_Source, uberMaterial, 3);
 
             // 释放临时RT
             cmd.ReleaseTemporaryRT(m_TempRT0.id);
             cmd.ReleaseTemporaryRT(m_TempRT1.id);
             cmd.ReleaseTemporaryRT(m_TempRT2.id);
+        }
+
+        void SetMotionBlur(CommandBuffer cmd, Material uberMaterial)
+        {
+            if (motionBlurLastRT == null || motionBlurLastRT.width != m_Descriptor.width || motionBlurLastRT.height != m_Descriptor.height)
+            {
+                Object.DestroyImmediate(motionBlurLastRT);
+                motionBlurLastRT = new RenderTexture(m_Descriptor);
+                motionBlurLastRT.hideFlags = HideFlags.HideAndDontSave;
+                cmd.Blit(m_Source, motionBlurLastRT);
+                // or
+                // Blit(cmd, m_Source, motionBlurLastRT);
+                return;
+            }
+
+            motionBlurLastRT.MarkRestoreExpected();
+            uberMaterial.SetFloat("_BlurAmount", 1.0f - m_MotionBlur.blurAmount.value);
+
+            cmd.Blit(m_Source, motionBlurLastRT, uberMaterial);
+            cmd.Blit(motionBlurLastRT, m_Source);
         }
 
         #endregion

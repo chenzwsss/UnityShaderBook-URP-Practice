@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: AdditionPostProcessRendererFeature
   m_EditorClassIdentifier: 
   m_Active: 1
-  shader: {fileID: 4800000, guid: 61dc8047d7f154b988458fd488920be5, type: 3}
+  postData: {fileID: 11400000, guid: 7c97fdae01e3545a680c3021c2c77413, type: 2}
 --- !u!114 &11400000
 MonoBehaviour:
   m_ObjectHideFlags: 0

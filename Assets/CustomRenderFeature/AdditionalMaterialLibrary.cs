@@ -8,6 +8,8 @@ namespace UnityEngine.Rendering.Universal
         public readonly Material brightnessSaturationContrast;
         // 这里扩展后处理材质属性
 
+        public readonly Material edgeDetection;
+
         /// <summary>
         /// 初始化时从配置文件中获取材质
         /// </summary>
@@ -16,6 +18,8 @@ namespace UnityEngine.Rendering.Universal
         {
             brightnessSaturationContrast = Load(data.shaders.brightnessSaturationContrast);
             // 这里扩展后处理材质的加载
+
+            edgeDetection = Load(data.shaders.edgeDetection);
         }
 
         Material Load(Shader shader)

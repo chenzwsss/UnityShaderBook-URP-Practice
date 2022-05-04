@@ -10,8 +10,9 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 3faadb78400f04c30a17b2abb9285db8, type: 3}
-  m_Name: PostProcessData_BrightnessSaturationAndContrast
+  m_Name: AdditionalPostProcessData
   m_EditorClassIdentifier: 
   shaders:
     brightnessSaturationContrast: {fileID: 4800000, guid: 61dc8047d7f154b988458fd488920be5,
       type: 3}
+    edgeDetection: {fileID: 4800000, guid: b6c923302e093403285f61ef43e57957, type: 3}

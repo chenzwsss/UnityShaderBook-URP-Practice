@@ -13,7 +13,9 @@ namespace UnityEngine.Rendering.Universal
         {
             public Shader brightnessSaturationContrast;
             //在这里扩展后续其他后处理Shader引用
+
+            public Shader edgeDetection;
         }
         public Shaders shaders;
-    }   
+    }
 }

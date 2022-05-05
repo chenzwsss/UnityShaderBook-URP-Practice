@@ -1,5 +1,49 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
+--- !u!114 &-8541057907407826464
+MonoBehaviour:
+  m_ObjectHideFlags: 3
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 89c9c11bffb124313a43e4e65f85e8df, type: 3}
+  m_Name: MotionBlurWithDepthTexture
+  m_EditorClassIdentifier: 
+  active: 1
+  _Switch:
+    m_OverrideState: 1
+    m_Value: 1
+  blurSize:
+    m_OverrideState: 1
+    m_Value: 0.5
+--- !u!114 &-5031764066771060214
+MonoBehaviour:
+  m_ObjectHideFlags: 3
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 70a3799db395749368ee578f03fbb752, type: 3}
+  m_Name: BrightnessSaturationContrast
+  m_EditorClassIdentifier: 
+  active: 1
+  _Switch:
+    m_OverrideState: 1
+    m_Value: 1
+  brightness:
+    m_OverrideState: 1
+    m_Value: 1.2
+  saturation:
+    m_OverrideState: 1
+    m_Value: 1.6
+  contrast:
+    m_OverrideState: 1
+    m_Value: 1.2
 --- !u!114 &-1993281643362341894
 MonoBehaviour:
   m_ObjectHideFlags: 3
@@ -38,11 +82,8 @@ MonoBehaviour:
   m_Name: Chapter 12 BrightnessSaturationAndContrast Global Volume Profile
   m_EditorClassIdentifier: 
   components:
-  - {fileID: 4234241766774452921}
-  - {fileID: -1993281643362341894}
-  - {fileID: 5556031144163310222}
-  - {fileID: 2556781699388953815}
-  - {fileID: 5079682851811138458}
+  - {fileID: -5031764066771060214}
+  - {fileID: 8310484671779276560}
 --- !u!114 &2556781699388953815
 MonoBehaviour:
   m_ObjectHideFlags: 3
@@ -108,7 +149,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 89671f4912bbe40a0aa0aae4e92c0442, type: 3}
   m_Name: MotionBlur
   m_EditorClassIdentifier: 
-  active: 1
+  active: 0
   _Switch:
     m_OverrideState: 1
     m_Value: 1
@@ -140,3 +181,31 @@ MonoBehaviour:
   downSample:
     m_OverrideState: 1
     m_Value: 2
+--- !u!114 &8310484671779276560
+MonoBehaviour:
+  m_ObjectHideFlags: 3
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1f4f9c36800cc46a6b6f657af858e30d, type: 3}
+  m_Name: FogWithDepthTexture
+  m_EditorClassIdentifier: 
+  active: 1
+  _Switch:
+    m_OverrideState: 1
+    m_Value: 1
+  fogDensity:
+    m_OverrideState: 1
+    m_Value: 1.2
+  fogColor:
+    m_OverrideState: 1
+    m_Value: {r: 0.69803923, g: 0.7058824, b: 0.69411767, a: 1}
+  fogStart:
+    m_OverrideState: 1
+    m_Value: -0.5
+  fogEnd:
+    m_OverrideState: 1
+    m_Value: 3

@@ -42,6 +42,12 @@ namespace UnityEngine.Rendering.Universal
         MotionBlur m_MotionBlur;
         private RenderTexture motionBlurLastRT;
 
+        MotionBlurWithDepthTexture m_MotionBlurWithDepthTexture;
+        private Matrix4x4 previousViewProjectionMatrix;
+        private Camera camera;
+
+        FogWithDepthTexture m_FogWithDepthTexture;
+
         public AdditionPostProcessPass(RenderPassEvent evt, AdditionalPostProcessData data, Material blitMaterial = null)
         {
             renderPassEvent = evt;
@@ -52,6 +58,9 @@ namespace UnityEngine.Rendering.Universal
             m_TempRT0.Init("_TemporaryRenderTexture0");
             m_TempRT1.Init("_TemporaryRenderTexture1");
             m_TempRT2.Init("_TemporaryRenderTexture2");
+
+            camera = GameObject.Find("Main Camera").GetComponent<Camera>();
+            previousViewProjectionMatrix = camera.projectionMatrix * camera.worldToCameraMatrix;
         }
 
         public void Setup(in RenderTextureDescriptor baseDescriptor, in RenderTargetIdentifier source, in RenderTargetIdentifier depth, in RenderTargetHandle destination)
@@ -81,6 +90,8 @@ namespace UnityEngine.Rendering.Universal
             m_GaussianBlur = stack.GetComponent<GaussianBlur>();
             m_Bloom = stack.GetComponent<Bloom>();
             m_MotionBlur = stack.GetComponent<MotionBlur>();
+            m_MotionBlurWithDepthTexture = stack.GetComponent<MotionBlurWithDepthTexture>();
+            m_FogWithDepthTexture = stack.GetComponent<FogWithDepthTexture>();
  
             // 从命令缓冲区池中获取一个带标签的渲染命令，该标签名可以在后续帧调试器中见到
             var cmd = CommandBufferPool.Get(CommandBufferTag);
@@ -124,6 +135,14 @@ namespace UnityEngine.Rendering.Universal
             if (m_MotionBlur.IsActive() && !isSceneViewCamera)
             {
                 SetMotionBlur(cmd, m_Materials.motionBlur);
+            }
+            if (m_MotionBlurWithDepthTexture.IsActive() && !isSceneViewCamera)
+            {
+                SetMotionBlurWithDepthTexture(cmd, m_Materials.motionBlurWithDepthTexture);
+            }
+            if (m_FogWithDepthTexture.IsActive() && !isSceneViewCamera)
+            {
+                SetFogWithDepthTexture(cmd, m_Materials.fogWithDepthTexture);
             }
         }
 
@@ -294,6 +313,99 @@ namespace UnityEngine.Rendering.Universal
 
             cmd.Blit(m_Source, motionBlurLastRT, uberMaterial);
             cmd.Blit(motionBlurLastRT, m_Source);
+        }
+
+        void SetMotionBlurWithDepthTexture(CommandBuffer cmd, Material uberMaterial)
+        {
+            if (camera)
+            {
+                uberMaterial.SetFloat("_BlurSize", m_MotionBlurWithDepthTexture.blurSize.value);
+
+                int tw = m_Descriptor.width;
+                int th = m_Descriptor.height;
+                var desc = GetStereoCompatibleDescriptor(tw, th);
+                cmd.GetTemporaryRT(m_TempRT0.id, desc, FilterMode.Bilinear);
+
+                cmd.SetGlobalMatrix("_PreviousViewProjectionMatrix", previousViewProjectionMatrix);
+                Matrix4x4 currentViewProjectionMatrix = camera.projectionMatrix * camera.worldToCameraMatrix;
+                Matrix4x4 currentViewProjectionInverseMatrix = currentViewProjectionMatrix.inverse;
+                cmd.SetGlobalMatrix("_CurrentViewProjectionInverseMatrix", currentViewProjectionInverseMatrix);
+                previousViewProjectionMatrix = currentViewProjectionMatrix;
+
+                // 通过材质，将计算结果存入临时缓冲区
+                cmd.Blit(m_Source, m_TempRT0.Identifier(), uberMaterial);
+                // 再从临时缓冲区存入主纹理
+                cmd.Blit(m_TempRT0.Identifier(), m_Source);
+
+                // 释放临时RT
+                cmd.ReleaseTemporaryRT(m_TempRT0.id);
+            }
+        }
+
+        void SetFogWithDepthTexture(CommandBuffer cmd, Material uberMaterial)
+        {
+            if (camera)
+            {
+                Matrix4x4 frustumCorners = Matrix4x4.identity;
+                Transform cameraTransform = camera.transform;
+
+                // 相机的fov
+                float fov = camera.fieldOfView;
+                // 相机到近裁剪平面(屏幕)的距离
+                float near = camera.nearClipPlane;
+                // 近裁剪平面(屏幕)的宽高比(width/height)
+                float aspect = camera.aspect;
+
+                // 根据三角函数求出近裁剪平面一半的高度
+                float halfHeight = near * Mathf.Tan(fov * 0.5f * Mathf.Deg2Rad);
+                // right, up, forward 组成相机的三个单位向量
+                // 求出 toTop 和 toRight
+                Vector3 toTop = cameraTransform.up * halfHeight;
+                Vector3 toRight = cameraTransform.right * halfHeight * aspect;
+
+                // 近裁剪平面左上角 topLeft
+                Vector3 topLeft = cameraTransform.forward * near + toTop - toRight;
+                float scale = topLeft.magnitude / near;
+
+                topLeft.Normalize();
+                topLeft *= scale;
+
+                Vector3 topRight = cameraTransform.forward * near + toRight + toTop;
+                topRight.Normalize();
+                toRight *= scale;
+
+                Vector3 bottomLeft = cameraTransform.forward * near - toTop - toRight;
+                bottomLeft.Normalize();
+                bottomLeft *= scale;
+
+                Vector3 bottomRight = cameraTransform.forward * near + toRight - toTop;
+                bottomRight.Normalize();
+                bottomRight *= scale;
+
+                frustumCorners.SetRow(0, bottomLeft);
+                frustumCorners.SetRow(1, bottomRight);
+                frustumCorners.SetRow(2, topRight);
+                frustumCorners.SetRow(3, topLeft);
+
+                uberMaterial.SetMatrix("_FrustumCornersRay", frustumCorners);
+                uberMaterial.SetFloat("_FogDensity", m_FogWithDepthTexture.fogDensity.value);
+                uberMaterial.SetColor("_FogColor", m_FogWithDepthTexture.fogColor.value);
+                uberMaterial.SetFloat("_FogStart", m_FogWithDepthTexture.fogStart.value);
+                uberMaterial.SetFloat("_FogEnd", m_FogWithDepthTexture.fogEnd.value);
+
+                int tw = m_Descriptor.width;
+                int th = m_Descriptor.height;
+                var desc = GetStereoCompatibleDescriptor(tw, th);
+                cmd.GetTemporaryRT(m_TempRT0.id, desc, FilterMode.Bilinear);
+
+                // 通过材质，将计算结果存入临时缓冲区
+                cmd.Blit(m_Source, m_TempRT0.Identifier(), uberMaterial);
+                // 再从临时缓冲区存入主纹理
+                cmd.Blit(m_TempRT0.Identifier(), m_Source);
+
+                // 释放临时RT
+                cmd.ReleaseTemporaryRT(m_TempRT0.id);
+            }
         }
 
         #endregion

@@ -22,6 +22,10 @@ namespace UnityEngine.Rendering.Universal
             public Shader bloom;
             // MotionBlur
             public Shader motionBlur;
+            // MotionBlur With Depth Texture
+            public Shader motionBlurWithDepthTexture;
+            // Fog with Depth Texture
+            public Shader fogWithDepthTexture;
         }
         public Shaders shaders;
     }

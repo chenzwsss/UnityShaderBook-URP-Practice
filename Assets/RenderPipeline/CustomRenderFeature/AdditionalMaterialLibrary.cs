@@ -16,6 +16,10 @@ namespace UnityEngine.Rendering.Universal
 
         public readonly Material motionBlur;
 
+        public readonly Material motionBlurWithDepthTexture;
+
+        public readonly Material fogWithDepthTexture;
+
         /// <summary>
         /// 初始化时从配置文件中获取材质
         /// </summary>
@@ -29,6 +33,8 @@ namespace UnityEngine.Rendering.Universal
             gaussianBlur = Load(data.shaders.gaussianBlur);
             bloom = Load(data.shaders.bloom);
             motionBlur = Load(data.shaders.motionBlur);
+            motionBlurWithDepthTexture = Load(data.shaders.motionBlurWithDepthTexture);
+            fogWithDepthTexture = Load(data.shaders.fogWithDepthTexture);
         }
 
         Material Load(Shader shader)

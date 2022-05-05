@@ -10,7 +10,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 3faadb78400f04c30a17b2abb9285db8, type: 3}
-  m_Name: Chapter12_AdditionalPostProcessData
+  m_Name: AdditionalPostProcessData
   m_EditorClassIdentifier: 
   shaders:
     brightnessSaturationContrast: {fileID: 4800000, guid: 61dc8047d7f154b988458fd488920be5,
@@ -19,3 +19,7 @@ MonoBehaviour:
     gaussianBlur: {fileID: 4800000, guid: 8961ac389e6fb4dc580168057a174be2, type: 3}
     bloom: {fileID: 4800000, guid: 9b1f2640040e04472acedc569605f970, type: 3}
     motionBlur: {fileID: 4800000, guid: 442afe91238d54ab89b5ba75c5bae9e3, type: 3}
+    motionBlurWithDepthTexture: {fileID: 4800000, guid: 218cdb49d338f4877889474d7835efe1,
+      type: 3}
+    fogWithDepthTexture: {fileID: 4800000, guid: 7a24de4555ebf4f9ba185504694bde64,
+      type: 3}

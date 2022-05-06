@@ -23,3 +23,5 @@ MonoBehaviour:
       type: 3}
     fogWithDepthTexture: {fileID: 4800000, guid: 7a24de4555ebf4f9ba185504694bde64,
       type: 3}
+    edgeDetectNormalsAndDepth: {fileID: 4800000, guid: adab8b59cf306420d9d071281c4a4921,
+      type: 3}

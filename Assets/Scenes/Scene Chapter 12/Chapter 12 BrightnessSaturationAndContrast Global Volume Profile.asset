@@ -40,7 +40,7 @@ MonoBehaviour:
     m_Value: 1.2
   saturation:
     m_OverrideState: 1
-    m_Value: 1.6
+    m_Value: 1.2
   contrast:
     m_OverrideState: 1
     m_Value: 1.2
@@ -83,7 +83,35 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   components:
   - {fileID: -5031764066771060214}
-  - {fileID: 8310484671779276560}
+  - {fileID: 1910608529442925193}
+--- !u!114 &1910608529442925193
+MonoBehaviour:
+  m_ObjectHideFlags: 3
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c58c87790270845e28389a2ab7918927, type: 3}
+  m_Name: Bloom
+  m_EditorClassIdentifier: 
+  active: 1
+  _Switch:
+    m_OverrideState: 1
+    m_Value: 1
+  iterations:
+    m_OverrideState: 1
+    m_Value: 3
+  blurSpread:
+    m_OverrideState: 1
+    m_Value: 0.6
+  downSample:
+    m_OverrideState: 1
+    m_Value: 2
+  luminanceThreshold:
+    m_OverrideState: 1
+    m_Value: 0.6
 --- !u!114 &2556781699388953815
 MonoBehaviour:
   m_ObjectHideFlags: 3
@@ -181,31 +209,3 @@ MonoBehaviour:
   downSample:
     m_OverrideState: 1
     m_Value: 2
---- !u!114 &8310484671779276560
-MonoBehaviour:
-  m_ObjectHideFlags: 3
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 1f4f9c36800cc46a6b6f657af858e30d, type: 3}
-  m_Name: FogWithDepthTexture
-  m_EditorClassIdentifier: 
-  active: 1
-  _Switch:
-    m_OverrideState: 1
-    m_Value: 1
-  fogDensity:
-    m_OverrideState: 1
-    m_Value: 1.2
-  fogColor:
-    m_OverrideState: 1
-    m_Value: {r: 0.69803923, g: 0.7058824, b: 0.69411767, a: 1}
-  fogStart:
-    m_OverrideState: 1
-    m_Value: -0.5
-  fogEnd:
-    m_OverrideState: 1
-    m_Value: 3

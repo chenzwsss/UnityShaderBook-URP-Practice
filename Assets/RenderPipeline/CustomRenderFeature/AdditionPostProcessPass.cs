@@ -48,6 +48,8 @@ namespace UnityEngine.Rendering.Universal
 
         FogWithDepthTexture m_FogWithDepthTexture;
 
+        EdgeDetectNormalsAndDepth m_EdgeDetectNormalsAndDepth;
+
         public AdditionPostProcessPass(RenderPassEvent evt, AdditionalPostProcessData data, Material blitMaterial = null)
         {
             renderPassEvent = evt;
@@ -58,9 +60,6 @@ namespace UnityEngine.Rendering.Universal
             m_TempRT0.Init("_TemporaryRenderTexture0");
             m_TempRT1.Init("_TemporaryRenderTexture1");
             m_TempRT2.Init("_TemporaryRenderTexture2");
-
-            camera = GameObject.Find("Main Camera").GetComponent<Camera>();
-            previousViewProjectionMatrix = camera.projectionMatrix * camera.worldToCameraMatrix;
         }
 
         public void Setup(in RenderTextureDescriptor baseDescriptor, in RenderTargetIdentifier source, in RenderTargetIdentifier depth, in RenderTargetHandle destination)
@@ -70,6 +69,9 @@ namespace UnityEngine.Rendering.Universal
 
             m_Depth = depth;
             m_Destination = destination;
+
+            camera = GameObject.Find("Main Camera").GetComponent<Camera>();
+            previousViewProjectionMatrix = camera.projectionMatrix * camera.worldToCameraMatrix;
         }
 
 
@@ -92,7 +94,8 @@ namespace UnityEngine.Rendering.Universal
             m_MotionBlur = stack.GetComponent<MotionBlur>();
             m_MotionBlurWithDepthTexture = stack.GetComponent<MotionBlurWithDepthTexture>();
             m_FogWithDepthTexture = stack.GetComponent<FogWithDepthTexture>();
- 
+            m_EdgeDetectNormalsAndDepth = stack.GetComponent<EdgeDetectNormalsAndDepth>();
+
             // 从命令缓冲区池中获取一个带标签的渲染命令，该标签名可以在后续帧调试器中见到
             var cmd = CommandBufferPool.Get(CommandBufferTag);
 
@@ -143,6 +146,10 @@ namespace UnityEngine.Rendering.Universal
             if (m_FogWithDepthTexture.IsActive() && !isSceneViewCamera)
             {
                 SetFogWithDepthTexture(cmd, m_Materials.fogWithDepthTexture);
+            }
+            if (m_EdgeDetectNormalsAndDepth.IsActive() && !isSceneViewCamera)
+            {
+                SetEdgeDetectNormalsAndDepth(cmd, m_Materials.edgeDetectNormalsAndDepth);
             }
         }
 
@@ -406,6 +413,29 @@ namespace UnityEngine.Rendering.Universal
                 // 释放临时RT
                 cmd.ReleaseTemporaryRT(m_TempRT0.id);
             }
+        }
+
+        void SetEdgeDetectNormalsAndDepth(CommandBuffer cmd, Material uberMaterial)
+        {
+            uberMaterial.SetFloat("_EdgeOnly", m_EdgeDetectNormalsAndDepth.edgesOnly.value);
+            uberMaterial.SetColor("_EdgeColor", m_EdgeDetectNormalsAndDepth.edgeColor.value);
+            uberMaterial.SetColor("_BackgroundColor", m_EdgeDetectNormalsAndDepth.backgroundColor.value);
+            uberMaterial.SetFloat("_SampleDistance", m_EdgeDetectNormalsAndDepth.sampleDistance.value);
+            uberMaterial.SetVector("_Sensitivity", new Vector4(m_EdgeDetectNormalsAndDepth.sensitivityNormals.value,
+                m_EdgeDetectNormalsAndDepth.sensitivityDepth.value, 0.0f, 0.0f));
+
+            int tw = m_Descriptor.width;
+            int th = m_Descriptor.height;
+            var desc = GetStereoCompatibleDescriptor(tw, th);
+            cmd.GetTemporaryRT(m_TempRT0.id, desc, FilterMode.Bilinear);
+
+            // 通过材质，将计算结果存入临时缓冲区
+            cmd.Blit(m_Source, m_TempRT0.Identifier(), uberMaterial);
+            // 再从临时缓冲区存入主纹理
+            cmd.Blit(m_TempRT0.Identifier(), m_Source);
+
+            // 释放临时RT
+            cmd.ReleaseTemporaryRT(m_TempRT0.id);
         }
 
         #endregion

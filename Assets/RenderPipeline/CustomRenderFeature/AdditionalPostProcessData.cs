@@ -26,6 +26,8 @@ namespace UnityEngine.Rendering.Universal
             public Shader motionBlurWithDepthTexture;
             // Fog with Depth Texture
             public Shader fogWithDepthTexture;
+            // edge detect with normals and depth
+            public Shader edgeDetectNormalsAndDepth;
         }
         public Shaders shaders;
     }

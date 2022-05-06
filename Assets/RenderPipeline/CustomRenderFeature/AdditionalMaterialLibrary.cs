@@ -20,6 +20,8 @@ namespace UnityEngine.Rendering.Universal
 
         public readonly Material fogWithDepthTexture;
 
+        public readonly Material edgeDetectNormalsAndDepth;
+
         /// <summary>
         /// 初始化时从配置文件中获取材质
         /// </summary>
@@ -35,6 +37,7 @@ namespace UnityEngine.Rendering.Universal
             motionBlur = Load(data.shaders.motionBlur);
             motionBlurWithDepthTexture = Load(data.shaders.motionBlurWithDepthTexture);
             fogWithDepthTexture = Load(data.shaders.fogWithDepthTexture);
+            edgeDetectNormalsAndDepth = Load(data.shaders.edgeDetectNormalsAndDepth);
         }
 
         Material Load(Shader shader)

@@ -86,7 +86,7 @@ Shader "URP Practice/Chapter 12/Bloom"
         half4 fragBloom(VaryingsBloom input) : SV_Target
         {
             half4 c = SAMPLE_TEXTURE2D(_MainTex, sampler_MainTex, input.uv.xy);
-            half bloom = SAMPLE_TEXTURE2D(_BloomTexture, sampler_BloomTexture, input.uv.zw);
+            half4 bloom = SAMPLE_TEXTURE2D(_BloomTexture, sampler_BloomTexture, input.uv.zw);
             return c + bloom;
         }
 

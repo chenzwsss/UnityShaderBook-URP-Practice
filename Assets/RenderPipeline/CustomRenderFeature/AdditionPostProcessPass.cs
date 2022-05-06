@@ -70,8 +70,11 @@ namespace UnityEngine.Rendering.Universal
             m_Depth = depth;
             m_Destination = destination;
 
-            camera = GameObject.Find("Main Camera").GetComponent<Camera>();
-            previousViewProjectionMatrix = camera.projectionMatrix * camera.worldToCameraMatrix;
+            if (GameObject.Find("Main Camera"))
+            {
+                camera = GameObject.Find("Main Camera").GetComponent<Camera>();
+                previousViewProjectionMatrix = camera.projectionMatrix * camera.worldToCameraMatrix;
+            }
         }
 
 

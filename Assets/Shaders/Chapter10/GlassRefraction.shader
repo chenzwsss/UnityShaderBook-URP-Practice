@@ -32,11 +32,11 @@ Shader "URP Practice/Chapter 10/GlassRefraction"
 
             TEXTURE2D(_CameraOpaqueTexture);
             SAMPLER(sampler_CameraOpaqueTexture);
-            half4 _CameraOpaqueTexture_TexelSize;
 
             CBUFFER_START(UnityPerMaterial)
                 half4 _BaseMap_ST;
                 half4 _BumpMap_ST;
+                half4 _CameraOpaqueTexture_TexelSize;
                 float _Distortion;
                 half _RefractAmount;
             CBUFFER_END
@@ -98,10 +98,10 @@ Shader "URP Practice/Chapter 10/GlassRefraction"
                 half3 normalWS = normalize(TransformTangentToWorld(normalTS, half3x3(input.tangentWS.xyz, input.bitangentWS.xyz, input.normalWS.xyz)));
 
                 float2 offset = normalTS.xy * _Distortion * _CameraOpaqueTexture_TexelSize.xy;
-                // input.positionNDC.xy = offset * input.positionNDC.z + input.positionNDC.xy; ???
 
-                // 获取屏幕空间下的UV
-                float2 screenUV = GetNormalizedScreenSpaceUV(input.positionCS) + offset;
+                input.positionNDC.xy = offset * input.positionNDC.z + input.positionNDC.xy;
+                // 透视除法
+                float2 screenUV = input.positionNDC.xy / input.positionNDC.w;
 
                 half3 refraction = SAMPLE_TEXTURE2D(_CameraOpaqueTexture, sampler_CameraOpaqueTexture, screenUV).rgb;
 

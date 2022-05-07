@@ -28,6 +28,8 @@ namespace UnityEngine.Rendering.Universal
             public Shader fogWithDepthTexture;
             // edge detect with normals and depth
             public Shader edgeDetectNormalsAndDepth;
+
+            public Shader fogWithNoise;
         }
         public Shaders shaders;
     }

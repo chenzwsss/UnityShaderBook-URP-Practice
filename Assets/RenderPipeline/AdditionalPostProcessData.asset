@@ -25,3 +25,4 @@ MonoBehaviour:
       type: 3}
     edgeDetectNormalsAndDepth: {fileID: 4800000, guid: adab8b59cf306420d9d071281c4a4921,
       type: 3}
+    fogWithNoise: {fileID: 4800000, guid: 1b59921cdf5b84bc0bb9a5610f604a2e, type: 3}

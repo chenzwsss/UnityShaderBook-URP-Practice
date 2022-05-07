@@ -135,7 +135,6 @@ GameObject:
   - component: {fileID: 496770647}
   - component: {fileID: 496770646}
   - component: {fileID: 496770649}
-  - component: {fileID: 496770650}
   m_Layer: 0
   m_Name: Main Camera
   m_TagString: MainCamera
@@ -242,23 +241,6 @@ MonoBehaviour:
   m_RequiresDepthTexture: 0
   m_RequiresColorTexture: 0
   m_Version: 2
---- !u!114 &496770650
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 496770645}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 006274f6e66ca45e5bbf47ce91f17fb5, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  speed: 5
-  startPoint: {x: 0, y: 1, z: -11}
-  endPoint: {x: 0, y: 6, z: -10}
-  lookAt: {x: 0, y: -0.4, z: -1.5}
-  pingpong: 1
 --- !u!1 &780348276
 GameObject:
   m_ObjectHideFlags: 0

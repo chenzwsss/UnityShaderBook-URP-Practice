@@ -57,6 +57,7 @@ Shader "URP Practice/Chapter 10/GlassRefraction"
                 float3 normalWS : TEXCOORD2;
                 float3 tangentWS : TEXCOORD3;
                 float3 bitangentWS : TEXCOORD4;
+                float4 positionNDC : TEXCOORD5;
             };
 
             Varyings vert(Attributes input)
@@ -84,6 +85,8 @@ Shader "URP Practice/Chapter 10/GlassRefraction"
                 output.tangentWS = normalInput.tangentWS;
                 output.bitangentWS = normalInput.bitangentWS;
 
+                output.positionNDC = positionInputs.positionNDC;
+
                 return output;
             }
 
@@ -95,9 +98,11 @@ Shader "URP Practice/Chapter 10/GlassRefraction"
                 half3 normalWS = normalize(TransformTangentToWorld(normalTS, half3x3(input.tangentWS.xyz, input.bitangentWS.xyz, input.normalWS.xyz)));
 
                 float2 offset = normalTS.xy * _Distortion * _CameraOpaqueTexture_TexelSize.xy;
+                // input.positionNDC.xy = offset * input.positionNDC.z + input.positionNDC.xy; ???
+
                 // 获取屏幕空间下的UV
                 float2 screenUV = GetNormalizedScreenSpaceUV(input.positionCS) + offset;
-                // 计算折射
+
                 half3 refraction = SAMPLE_TEXTURE2D(_CameraOpaqueTexture, sampler_CameraOpaqueTexture, screenUV).rgb;
 
                 half3 viewDirectionWS = normalize(GetWorldSpaceViewDir(input.positionWS));

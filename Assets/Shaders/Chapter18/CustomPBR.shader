@@ -170,7 +170,7 @@ Shader "URP Practice/Chapter 18 /CustomPBR"
                 half3 lightDirectionWS = normalize(mainLight.direction);
                 half3 viewDirectionWS = normalize(GetWorldSpaceViewDir(input.positionWS));
 
-                half3 reflectionWS = normalize(reflect(-viewDirectionWS, normalWS));
+                half3 reflectionWS = reflect(-viewDirectionWS, normalWS);
 
                 half3 halfDir = normalize(lightDirectionWS + viewDirectionWS);
 
@@ -202,13 +202,13 @@ Shader "URP Practice/Chapter 18 /CustomPBR"
                 half mip = perceptualRoughness * 6;
 
                 reflectionWS = BoxProjectedCubemapDirection(reflectionWS, input.positionWS, unity_SpecCube0_ProbePosition, unity_SpecCube0_BoxMin, unity_SpecCube0_BoxMax);
-                half3 envMap = SAMPLE_TEXTURECUBE_LOD(unity_SpecCube0, samplerunity_SpecCube0, reflectionWS, mip).rgb;
+                half3 envMap = DecodeHDREnvironment(SAMPLE_TEXTURECUBE_LOD(unity_SpecCube0, samplerunity_SpecCube0, reflectionWS, mip), unity_SpecCube0_HDR);
                 half grazingTerm = saturate((1 - roughness) + (1 - oneMinusReflectivity));
                 half surfaceReduction = 1.0 / (roughness * roughness + 1.0);
                 // 为了给 IBL 添加更加真实的菲涅耳反射，我们对高光反射颜色 specColor 和掠射颜色 grazingTerm 进行菲涅耳插值。
                 // 掠射颜色 grazingTerm 是由材质粗糙度和之前计算得到的 oneMinusReflectivity 共同决定的。
                 // 使用掠射角度进行菲涅耳插值的好处是，我们可以在掠射角得 到更加真实的菲涅耳反射效果，同时还考虑了材质粗糙度的影响。
-                // 除此之外，我们还使用了由粗 糙度计算得到的 surfaceReduction 参数进一步对 IBL 的进行修正
+                // 除此之外，我们还使用了由粗糙度计算得到的 surfaceReduction 参数进一步对 IBL 的进行修正
                 half3 indirectSpecular = surfaceReduction * envMap * CustomFresnelLerp(specColor, grazingTerm, NV);
 
                 half3 col = emisstionTerm + PI * (diffuseTerm + specularTerm) * mainLight.color * NL * mainLight.distanceAttenuation + indirectSpecular;

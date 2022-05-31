@@ -37,8 +37,6 @@ Shader "URP Practice/Chapter 12/BrightnessSaturationAndContrast"
             #pragma vertex vert
             #pragma fragment frag
 
-            #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Core.hlsl"
-
             TEXTURE2D(_MainTex);
             SAMPLER(sampler_MainTex);
 
